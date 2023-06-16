@@ -8,17 +8,19 @@ from dialog_flow import get_intent_from_text
 
 def reply_to_message(df_project_id, event, vk_api):
     session_id = str(event.user_id)
-    reply_message = get_intent_from_text(
+    detected_intent = get_intent_from_text(
         df_project_id,
         session_id,
         event.text,
         'ru'
     )
-    vk_api.messages.send(
-        user_id=event.user_id,
-        message=reply_message,
-        random_id=random.randint(1,1000)
-    )
+    if not detected_intent.intent.is_fallback:
+        reply_message = detected_intent.fulfillment_text
+        vk_api.messages.send(
+            user_id=event.user_id,
+            message=reply_message,
+            random_id=random.randint(1,1000)
+        )
 
 
 if __name__ == "__main__":
