@@ -1,7 +1,12 @@
+import logging
+
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
 from dialog_flow import get_intent_from_text
+from telegram_logging import TgLogsHandler
+
+logger = logging.getLogger('tg-dialogflow-bot')
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -26,16 +31,28 @@ if __name__ == '__main__':
     env = Env()
     env.read_env()
     
-    tg_bot_token = env('TG_API_KEY')
+    tg_api_token = env('TG_API_KEY')
     dialogflow_project_id = env('DF_PROJECT_ID')
+    tg_log_chat_id = env('TG_LOG_CHAT_ID')
 
-    updater = Updater(tg_bot_token)
+    handler = TgLogsHandler(tg_api_token, tg_log_chat_id)
+    handler.setFormatter(
+        logging.Formatter('%(process)d %(levelname)s %(message)s')
+    )
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+
+    updater = Updater(tg_api_token)
     dispatcher = updater.dispatcher
     dispatcher.bot_data['df_project_id'] = dialogflow_project_id
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, reply_to_user))
     
-    updater.start_polling()
-    print('Bot started')
-    updater.idle()
+    logger.info('Bot started')
+    while True:
+        try:
+            updater.start_polling()
+            updater.idle()
+        except Exception as ex:
+            logger.exception(ex)
