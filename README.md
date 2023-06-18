@@ -5,9 +5,11 @@
 This project demonstrates the usage of [Dialogflow](https://Dialogflow.cloud.google.com/) natural language processing service with two simple bots for Telegram and VKontakte. Both bots utilizes Dialogflow API to find corresponding answers to user's questions given to any of these bots. Project contains three scripts there each one might be used standalone: Telegram bot, VKontakte bot, and a script for automated creation of Dialogflow intents (possible conversation cases).
 
 How it looks in Telegram:
+
 ![tg](./gif/tg_sample.gif)
 
 How it looks in VKontakte:
+
 ![vk](./gif/vk_sample.gif)
 
 This project created for educational purposes as part of an online course for web developers at [dvmn.org](https://dvmn.org/)
